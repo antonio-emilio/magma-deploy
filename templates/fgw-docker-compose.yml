@@ -1,0 +1,122 @@
+version: '3.8'
+
+# Magma Federated Gateway Docker Compose Template
+# This file is used by the deployment script to deploy the FGW
+
+services:
+  # Magma Daemon
+  magmad:
+    image: magma/magmad:latest
+    container_name: fgw-magmad
+    privileged: true
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Federation Hello Service
+  feg_hello:
+    image: magma/feg_hello:latest
+    container_name: fgw-hello
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Federation Session Proxy
+  feg_session_proxy:
+    image: magma/feg_session_proxy:latest
+    container_name: fgw-session-proxy
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Federation Relay
+  feg_relay:
+    image: magma/feg_relay:latest
+    container_name: fgw-relay
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Health Service
+  health:
+    image: magma/health:latest
+    container_name: fgw-health
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Diameter Client
+  diameter_client:
+    image: magma/diameter_client:latest
+    container_name: fgw-diameter-client
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # S8 Proxy
+  s8_proxy:
+    image: magma/s8_proxy:latest
+    container_name: fgw-s8-proxy
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Connection Tracker
+  connectiond:
+    image: magma/connectiond:latest
+    container_name: fgw-connectiond
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+networks:
+  default:
+    name: magma-fgw

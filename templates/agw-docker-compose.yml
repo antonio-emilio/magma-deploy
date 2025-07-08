@@ -1,0 +1,151 @@
+version: '3.8'
+
+# Magma Access Gateway Docker Compose Template
+# This file is used by the deployment script to deploy the AGW
+
+services:
+  # Magma Daemon
+  magmad:
+    image: magma/magmad:latest
+    container_name: magma-magmad
+    privileged: true
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # MME (Mobility Management Entity)
+  mme:
+    image: magma/mme:latest
+    container_name: magma-mme
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # SPGW (Serving/Packet Gateway)
+  spgw:
+    image: magma/spgw:latest
+    container_name: magma-spgw
+    privileged: true
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Session Manager
+  sessiond:
+    image: magma/sessiond:latest
+    container_name: magma-sessiond
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Mobility Manager
+  mobilityd:
+    image: magma/mobilityd:latest
+    container_name: magma-mobilityd
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Policy Decision Function
+  policydb:
+    image: magma/policydb:latest
+    container_name: magma-policydb
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Subscriber Database
+  subscriberdb:
+    image: magma/subscriberdb:latest
+    container_name: magma-subscriberdb
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # eNodeB Daemon
+  enodebd:
+    image: magma/enodebd:latest
+    container_name: magma-enodebd
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Connection Tracker
+  connectiond:
+    image: magma/connectiond:latest
+    container_name: magma-connectiond
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+  # Health Service
+  health:
+    image: magma/health:latest
+    container_name: magma-health
+    network_mode: host
+    depends_on:
+      - magmad
+    volumes:
+      - ./configs:/etc/magma
+      - ./certs:/var/opt/magma/certs
+    environment:
+      - MAGMA_PRINT_GRPC_PAYLOAD=0
+    restart: unless-stopped
+
+networks:
+  default:
+    name: magma-agw

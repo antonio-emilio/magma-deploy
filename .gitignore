@@ -1,0 +1,56 @@
+# Magma Deploy GitIgnore
+
+# Generated configuration files
+config/magma_config.env
+config/deployment_config.yaml
+
+# Log files
+*.log
+magma_deploy.log
+magma_deploy_bash.log
+
+# Certificate directories
+certs/
+certificates/
+
+# Temporary directories
+tmp/
+temp/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker volumes and networks
+docker-compose.override.yml
+
+# Kubernetes secrets
+secrets/
+*.key
+*.crt
+*.pem
+
+# Backup files
+*.bak
+*.backup
+
+# Test files
+test_*.py
+test_*.sh
